@@ -13,7 +13,7 @@ module DeepTest
 
     Logger::Severity.constants.each do |severity|
       test "#{severity.downcase} can not be called with any arguments" do
-        logger = Logger.new stub_everything
+        logger = Logger.new StringIO.new
         assert_raises(ArgumentError) { logger.send severity.downcase, "a"  }
       end
 

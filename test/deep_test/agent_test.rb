@@ -81,7 +81,7 @@ module DeepTest
       options = Options.new({})
       agent = Agent.new(0, options, stub_everything)
       io = StringIO.new
-      assert_raises(Errno::EADDRNOTAVAIL) { agent.connect io }
+      assert_raises(Errno::EADDRNOTAVAIL, Errno::ECONNREFUSED) { agent.connect io }
       assert_equal true, io.closed?
     end
 

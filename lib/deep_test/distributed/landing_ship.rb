@@ -12,9 +12,9 @@ module DeepTest
       def establish_beachhead(options)
         command  = "#{ssh_command(options)} '#{spawn_command(options)}' 2>&1"
         DeepTest.logger.debug { "Establishing Beachhead: #{command}" }
-        
+
         output = `#{command}`
-        output.each do |line|
+        output.split('\n').each do |line|
           if DeepTest.logger.level == Logger::DEBUG
             puts output
           end

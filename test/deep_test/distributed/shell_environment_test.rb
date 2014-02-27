@@ -15,6 +15,7 @@ module DeepTest
         environment = ShellEnvironment.new
         environment.include_first fixture_path('set_foo_to_bar')
 
+
         assert_enviroment({:FOO => "bar"}, environment)
       end
 
@@ -38,7 +39,7 @@ module DeepTest
 
         environment.include_first fixture_path('set_foo_to_bar'),
                                   fixture_path('set_foo_to_baz')
-      
+
         assert_enviroment({:FOO => "bar"}, environment)
       end
 
@@ -88,19 +89,18 @@ module DeepTest
         output = `#{environment} && env`
         assert $?.success?, "'#{environment} && env' command failed"
 
-        actual_hash = output.inject({}) do |h, line|
-          if line =~ /^(.*?)=(.*)/ && expected_hash.key?($1.to_sym)
-            h[$1.to_sym] = $2
-          end
-          h
+        actual_hash = {}
+        expected_hash.keys.each do |env_variable|
+          matched_env_variable = output.match /^(#{env_variable.to_s})=(.*)/
+          actual_hash[env_variable] = matched_env_variable[2] if matched_env_variable
         end
 
         assert_equal expected_hash, actual_hash
       end
 
       def fixture_path(filename)
-        File.expand_path(File.join(File.dirname(__FILE__), 
-                                   'shell_environment_fixtures', 
+        File.expand_path(File.join(File.dirname(__FILE__),
+                                   'shell_environment_fixtures',
                                    filename))
       end
     end

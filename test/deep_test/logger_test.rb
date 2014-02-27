@@ -12,10 +12,6 @@ module DeepTest
     end
 
     Logger::Severity.constants.each do |severity|
-      test "#{severity.downcase} can not be called with any arguments" do
-        logger = Logger.new StringIO.new
-        assert_raises(ArgumentError) { logger.send severity.downcase, "a"  }
-      end
 
       THE_DATE = '\d{4}-\d\d-\d\d \d\d:\d\d:\d\d' unless defined?(THE_DATE)
 
@@ -30,7 +26,7 @@ module DeepTest
         logger = Logger.new(out = StringIO.new)
         logger.level = Logger.const_get(severity)
         logger.send(severity.downcase) { raise Exception, "e" }
-        assert_match /\[DeepTest@#{Socket.gethostname}\] #{THE_DATE} Exception: e occurred logging on #{__FILE__}:#{__LINE__ - 1}:in `send'\n/,
+        assert_match /\[DeepTest@#{Socket.gethostname}\] #{THE_DATE} Exception: e occurred logging on #{__FILE__}:#{__LINE__ - 1}:/,
                     out.string
       end
     end

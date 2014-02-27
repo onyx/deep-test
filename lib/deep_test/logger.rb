@@ -19,14 +19,10 @@ module DeepTest
       end
     end
 
-    Severity.constants.each do |severity|
-      eval <<-end_src
-        def #{severity.downcase}
-          super
-        rescue Exception => e
-          super "\#{e.class}: \#{e} occurred logging on \#{caller[0]}", &nil
-        end
-      end_src
+    def add severity, message, progname=nil, &block
+      super severity, message, &block
+    rescue Exception => e
+      super severity,"#{e.class}: #{e} occurred logging on #{e.backtrace.first}", &nil
     end
   end
 end

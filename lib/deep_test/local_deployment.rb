@@ -20,7 +20,9 @@ module DeepTest
       wait_for_connect_threads = []
       each_agent do |agent_num|
         stream_from_child_process, stream_to_parent_process = IO.pipe
-        warlock.start "agent #{agent_num}", @agent_class.new(agent_num, @options, @options.new_listener_list), 
+        demon_name = "agent #{agent_num}"
+        Warlock.demon_pipes[demon_name] = [stream_from_child_process, stream_to_parent_process]
+        warlock.start demon_name, @agent_class.new(agent_num, @options, @options.new_listener_list),
                       stream_from_child_process, stream_to_parent_process
         wait_for_connect_threads << Thread.new do
           stream_to_parent_process.close
@@ -28,7 +30,7 @@ module DeepTest
           stream_from_child_process.close
           raise "Agent was not able to connect: #{message}" unless message == "Connected\n"
         end
-      end        
+      end
 
       wait_for_connect_threads.each { |t| t.join }
     end

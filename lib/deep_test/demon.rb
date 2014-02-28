@@ -11,7 +11,7 @@ module DeepTest
           rescue SystemExit => e
             raise
           rescue Exception => e
-            FailureMessage.show self.class.name, "Process #{Process.pid} exiting with excetion: #{e.class}: #{e.message}"
+            FailureMessage.show self.class.name, "Process #{Process.pid} exiting with exception: #{e.class}: #{e.message}"
             raise
           end
         end

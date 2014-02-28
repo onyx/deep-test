@@ -1,5 +1,9 @@
 module DeepTest
   class Warlock
+    def self.demon_pipes
+      @@pipes ||= {}
+    end
+
     def initialize(options)
       @options = options
       @demons_semaphore = Mutex.new
@@ -14,7 +18,7 @@ module DeepTest
       #
       begin
         pid = nil
-        @demons_semaphore.synchronize do 
+        @demons_semaphore.synchronize do
           pid = fork do
             # Fork leaves the semaphore locked and we'll never make it
             # to end of synchronize block.
@@ -26,6 +30,10 @@ module DeepTest
             @demons_semaphore.unlock if @demons_semaphore.locked?
 
             close_open_network_connections
+            # When forking processes, pipes are duplicated.  If a pipe is not closed
+            # correctly in all child processes, the parent process can not read from
+            # it.
+            close_duplicated_pipes name
             demon.forked name, @options, demon_args
 
             exit
@@ -46,9 +54,17 @@ module DeepTest
     def close_open_network_connections
       ObjectSpace.each_object(BasicSocket) do |sock|
         begin
-          sock.close 
+          sock.close
         rescue IOError
         end
+      end
+    end
+
+    def close_duplicated_pipes current_name
+      Warlock.demon_pipes.each do |demon_name,pipes|
+        input,output = pipes
+        output.close if (!output.closed? && demon_name != current_name)
+        input.close if (!input.closed? && demon_name != current_name)
       end
     end
 
@@ -117,7 +133,7 @@ module DeepTest
       #rescue Errno::EPERM
       #  return false
       end
-    end    
+    end
 
     protected
 

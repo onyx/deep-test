@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + "/../../spec_helper"
+require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
 
 describe DeepTest::Spec::WorkUnit do
   it_should_behave_like "sandboxed rspec_options"

@@ -1,5 +1,5 @@
 require 'rubygems'
-gem('rspec', ENV['RSPEC_VERSION'] || '1.1.12')
+require 'bundler/setup'
 require 'spec'
 
 require File.dirname(__FILE__) + '/../lib/deep_test'

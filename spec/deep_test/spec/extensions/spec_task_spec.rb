@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + "/../../../spec_helper"
+require File.expand_path(File.dirname(__FILE__) + "/../../../spec_helper")
 
 describe Spec::Rake::SpecTask do
   it "should allow deep_test configuration" do

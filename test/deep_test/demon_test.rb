@@ -15,8 +15,20 @@ module DeepTest
         puts "hello stdout"
       end).forked("name", options, [])
 
-      assert_equal ProxyIO::Stdout::Output.new("hello stdout"), operator.next_message[0].body
-      assert_equal ProxyIO::Stdout::Output.new("\n"), operator.next_message[0].body
+      after_connecting_to operator do
+        assert_equal ProxyIO::Stdout::Output.new("hello stdout"), operator.next_message[0].body
+        assert_equal ProxyIO::Stdout::Output.new("\n"), operator.next_message[0].body
+      end
+    end
+
+    def after_connecting_to operator, timeout = 5
+      start = Time.now
+      timedout = false
+      until operator.switchboard.any_live_wires? || timedout
+        timedout = (Time.now - start) > timeout
+      end
+      raise "Timed out connection to operator in tests" if timedout
+      yield
     end
   end
 end

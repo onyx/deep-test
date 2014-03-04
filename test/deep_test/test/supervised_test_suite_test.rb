@@ -28,14 +28,17 @@ module DeepTest
         result = ::Test::Unit::TestResult.new
 
         agent = ThreadAgent.new options
-        Timeout.timeout(5) do
-          supervised_suite.run(result) {}
-        end
-        central_command.done_with_work
-        agent.wait_until_done
+        after_connecting_to central_command do
+          Timeout.timeout(5) do
+            supervised_suite.run(result) {}
+          end
 
-        assert_equal 2, result.run_count
-        assert_equal 1, result.failure_count
+          central_command.done_with_work
+          agent.wait_until_done
+
+          assert_equal 2, result.run_count
+          assert_equal 1, result.failure_count
+        end
       end
 
       test "agent errors are counted as errors" do
@@ -76,22 +79,23 @@ module DeepTest
           test("1") {}
         end
         test_case = RunYieldsTestCase.new("test_1")
-
         central_command = TestCentralCommand.start options
         supervised_suite = SupervisedTestSuite.new(test_case, central_command)
 
         yielded = []
 
         agent = ThreadAgent.new options
-        Timeout.timeout(5) do
-          supervised_suite.run(stub_everything) do |channel,name|
-            yielded << [channel, name]
+        after_connecting_to central_command do
+          Timeout.timeout(5) do
+            supervised_suite.run(stub_everything) do |channel,name|
+              yielded << [channel, name]
+            end
           end
-        end
-        central_command.done_with_work
-        agent.wait_until_done
+          central_command.done_with_work
+          agent.wait_until_done
 
-        assert_equal true, yielded.include?([::Test::Unit::TestCase::FINISHED, test_case.name])
+          assert_equal true, yielded.include?([::Test::Unit::TestCase::FINISHED, test_case.name])
+        end
       end
 
       test "has same size as underlying suite" do
@@ -99,8 +103,18 @@ module DeepTest
         suite = ::Test::Unit::TestSuite.new("name")
         suite << "test"
         supervised_suite = SupervisedTestSuite.new(suite, TestCentralCommand.start(options))
-        
+
         assert_equal suite.size, supervised_suite.size
+      end
+
+      def after_connecting_to central_command, timeout = 5
+        start = Time.now
+        timedout = false
+        until central_command.instance_variable_get('@switchboard').any_live_wires? || timedout
+          timedout = (Time.now - start) > timeout
+        end
+        raise "Timed out connection to central command in tests" if timedout
+        yield
       end
     end
   end

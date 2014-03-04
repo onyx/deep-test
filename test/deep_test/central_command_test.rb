@@ -28,7 +28,7 @@ module DeepTest
       DynamicTeardown.on_teardown { central_command.stop }
       assert_raises(CentralCommand::NoAgentsRunningError) {central_command.take_result}
     end
-    
+
     test "start returns instance of central_command" do
       central_command = CentralCommand.start Options.new({})
       DynamicTeardown.on_teardown { central_command.stop }
@@ -43,10 +43,12 @@ module DeepTest
       central_command.write_work(:c)
 
       wire = Telegraph::Wire.connect("localhost", options.server_port)
-      [:a, :b, :c].each do |work_unit|
-        Thread.pass
-        wire.send_message CentralCommand::NeedWork
-        assert_equal work_unit, wire.next_message(:timeout => 2.0).body
+      after_connecting_to central_command do
+        [:a, :b, :c].each do |work_unit|
+          Thread.pass
+          wire.send_message CentralCommand::NeedWork
+          assert_equal work_unit, wire.next_message(:timeout => 2.0).body
+        end
       end
     end
 
@@ -60,9 +62,11 @@ module DeepTest
         wire.send_message result
       end
 
-      assert_equal result_1, central_command.take_result
-      assert_equal result_2, central_command.take_result
-      assert_equal result_3, central_command.take_result
+      after_connecting_to central_command do
+        assert_equal result_1, central_command.take_result
+        assert_equal result_2, central_command.take_result
+        assert_equal result_3, central_command.take_result
+      end
     end
 
     test "after starting CentralCommand responds to Result by supplying a new unit of work" do
@@ -73,11 +77,14 @@ module DeepTest
       central_command.write_work(:c)
 
       wire = Telegraph::Wire.connect("localhost", options.server_port)
-      result_1, result_2, result_3 = TestResult.new(1), TestResult.new(2), TestResult.new(3)
-      [[result_1, :a], [result_2, :b], [result_3, :c]].each do |result, work_unit|
-        Thread.pass
-        wire.send_message result_1
-        assert_equal work_unit, wire.next_message(:timeout => 2.0).body
+
+      after_connecting_to central_command do
+        result_1, result_2, result_3 = TestResult.new(1), TestResult.new(2), TestResult.new(3)
+        [[result_1, :a], [result_2, :b], [result_3, :c]].each do |result, work_unit|
+          Thread.pass
+          wire.send_message result_1
+          assert_equal work_unit, wire.next_message(:timeout => 2.0).body
+        end
       end
     end
 
@@ -90,7 +97,9 @@ module DeepTest
         wire.send_message TestResult.new(1)
       end
 
-      assert_equal TestResult.new(1), central_command.take_result
+      after_connecting_to central_command do
+        assert_equal TestResult.new(1), central_command.take_result
+      end
     end
 
     test "will distribute work units that have not received results from dead workers when other work runs out" do
@@ -101,12 +110,16 @@ module DeepTest
 
       Telegraph::Wire.connect("localhost", options.server_port) do |wire|
         wire.send_message CentralCommand::NeedWork
-        assert_equal :a, wire.next_message(:timeout => 1).body
+        after_connecting_to central_command do
+          assert_equal :a, wire.next_message(:timeout => 1).body
+        end
       end
 
       Telegraph::Wire.connect("localhost", options.server_port) do |wire|
         wire.send_message CentralCommand::NeedWork
-        assert_equal :a, wire.next_message(:timeout => 1).body
+        after_connecting_to central_command do
+          assert_equal :a, wire.next_message(:timeout => 1).body
+        end
       end
     end
 
@@ -118,9 +131,10 @@ module DeepTest
         wire.send_message Metrics::Measurement.new("category", 1, "units")
       end
 
-      sleep 0.05
-
-      assert_match /category: 1.0 avg/, central_command.data.summary
+      after_connecting_to central_command do
+        sleep 0.05
+        assert_match /category: 1.0 avg/, central_command.data.summary
+      end
     end
 
     class SetCalledGlobalToTrue
@@ -142,6 +156,16 @@ module DeepTest
           sleep 0.25
         end
       end
+    end
+
+    def after_connecting_to central_command, timeout = 5
+      start = Time.now
+      timedout = false
+      until central_command.instance_variable_get('@switchboard').any_live_wires? || timedout
+        timedout = (Time.now - start) > timeout
+      end
+      raise "Timed out connection to central command in tests" if timedout
+      yield
     end
   end
 end

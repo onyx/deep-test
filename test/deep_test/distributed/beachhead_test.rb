@@ -21,7 +21,9 @@ module DeepTest
           beachhead = Beachhead.new "", options
           beachhead.daemonize(0.25)
           # Have to sleep long enough to warlock to reap dead process
-          sleep 2.0
+          Timeout.timeout(5) do
+            until beachhead.warlock.demon_count == 0; end
+          end
           assert_equal 0, beachhead.warlock.demon_count
         ensure
           beachhead.warlock.stop_demons
@@ -38,7 +40,9 @@ module DeepTest
           port = beachhead.daemonize(0.25)
           Telegraph::Wire.connect("localhost", port).send_message Beachhead::DeployAgents
           # Have to sleep long enough to warlock to reap dead process
-          sleep 1.0
+          Timeout.timeout(5) do
+            until beachhead.warlock.demon_count == 1; end
+          end
           assert_equal 1, beachhead.warlock.demon_count
         ensure
           beachhead.warlock.stop_demons

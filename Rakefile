@@ -15,14 +15,15 @@ require "deep_test/rake_tasks"
 
 task :default => %w[
   test
-  spec
   deep_test
-  deep_spec
   distributed_test
-  distributed_spec
   negative_acceptance_tests
-  test_rails_project
 ]
+  #Removed the following from default
+  #spec
+  #deep_spec
+  #distributed_spec
+  #test_rails_project
 
 task :pc => :default
 
@@ -38,7 +39,7 @@ end
 DeepTest::TestTask.new(:manual_distributed_test) do |t|
   t.pattern = "test/**/*_test.rb"
   t.distributed_hosts = (ENV['HOSTS'] || '').split(' ')
-  t.sync_options = {:source => File.dirname(__FILE__) + "/../",
+  t.sync_options = {:source => File.dirname(__FILE__) + "/",
                     :username => ENV['USERNAME'],
                     :rsync_options => "--exclude=.svn"}
 end
@@ -46,7 +47,7 @@ end
 DeepTest::TestTask.new(:distributed_test) do |t|
   t.pattern = "test/**/*_test.rb"
   t.distributed_hosts = %w[localhost]
-  t.sync_options = {:source => File.dirname(__FILE__) + "/../",
+  t.sync_options = {:source => File.dirname(__FILE__) + "/",
                     :rsync_options => "--exclude=.svn",
                     :remote_base_dir => "/tmp/deep_test"}
 end
@@ -63,7 +64,7 @@ end
 Spec::Rake::SpecTask.new(:distributed_spec) do |t|
   t.spec_files = FileList['spec/**/*_spec.rb']
   t.deep_test :distributed_hosts => %w[localhost],
-              :sync_options => {:source => File.dirname(__FILE__) + "/../",
+              :sync_options => {:source => File.dirname(__FILE__) + "/",
                                 :rsync_options => "--exclude=.svn"}
 end
 

@@ -53,7 +53,8 @@ unit_tests do
 
   def run_rake(framework, task)
     command = "rake --rakefile #{File.dirname(__FILE__)}/tasks.rake deep_#{framework}_#{task} 2>&1"
-    output = `#{command}`.map {|l| "[rake deep_#{framework}_#{task}] #{l}" }.join
+    command_output = `#{command}`
+    output = "[rake deep_#{framework}_#{task}] #{command_output}"
     return $?, output
   end
 

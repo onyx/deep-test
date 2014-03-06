@@ -4,6 +4,7 @@ module DeepTest
   module Distributed
     unit_tests do
       test "like_login creates enviroment that will behave like login shell" do
+        ENV.stubs(:[]).with('SHELL').returns('bash')
         expected_env = ShellEnvironment.new
         expected_env.include_first '/etc/profile'
         expected_env.include_first '~/.profile', '~/.bash_profile', '~/.bashrc'

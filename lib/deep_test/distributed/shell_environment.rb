@@ -4,7 +4,8 @@ module DeepTest
       def self.like_login
         login_env = new
         login_env.include_first '/etc/profile'
-        login_env.include_first '~/.profile', '~/.bash_profile',  '~/.bashrc'
+        shell_without_path = ENV['SHELL'].split('/').last
+        login_env.include_first '~/.profile', "~/.#{shell_without_path}_profile",  "~/.#{shell_without_path}rc"
         login_env
       end
 

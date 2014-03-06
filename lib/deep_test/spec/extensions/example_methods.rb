@@ -5,7 +5,7 @@ module Spec
         if ::Spec::VERSION::MAJOR == 1 &&
            ::Spec::VERSION::MINOR == 1 &&
            ::Spec::VERSION::TINY  >= 12
-          file, line = eval("caller", @_implementation).first.split(/:/)
+          file, line = eval("caller", @_implementation.binding).first.split(/:/)
         else
           file, line = implementation_backtrace.first.split(/:/)
         end

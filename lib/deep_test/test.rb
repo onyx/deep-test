@@ -1,3 +1,5 @@
+gem 'test-unit'
+require 'test/unit'
 require "test/unit/testresult"
 require "test/unit/error"
 require 'test/unit/failure'

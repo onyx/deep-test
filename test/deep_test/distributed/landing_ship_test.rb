@@ -22,7 +22,7 @@ module DeepTest
           "ssh -4 remote_host " + 
           "'#{ShellEnvironment.like_login} && cd /tmp/myhost_my_local_dir && " + 
           "OPTIONS=#{options.to_command_line} " + 
-          "ruby lib/deep_test/distributed/establish_beachhead.rb' 2>&1"
+          "bundle exec ruby lib/deep_test/distributed/establish_beachhead.rb' 2>&1"
         ).returns("blah blah\nBeachhead port: 9999\nblah")
 
         landing_ship.establish_beachhead(options)
@@ -38,7 +38,7 @@ module DeepTest
           "ssh -4 remote_host -l me " + 
           "'#{ShellEnvironment.like_login} && cd /tmp/myhost_my_local_dir && " + 
           "OPTIONS=#{options.to_command_line} " + 
-          "ruby lib/deep_test/distributed/establish_beachhead.rb' 2>&1"
+          "bundle exec ruby lib/deep_test/distributed/establish_beachhead.rb' 2>&1"
         ).returns("blah blah\nBeachhead port: 9999\nblah")
 
         landing_ship.establish_beachhead(options)

@@ -1,5 +1,7 @@
 module DeepTest
   class TestTask
+    require 'rake'
+    include Rake::DSL
     attr_accessor :libs, :requires
 
     def initialize(name = :deep_test)
@@ -11,9 +13,8 @@ module DeepTest
       yield self if block_given?
       define
     end
-    
+
     def define
-      require 'rake'
       desc "Run '#{@name}' suite using DeepTest"
       task @name do
         lib_options = @libs.any? ? "-I" + @libs.join(File::PATH_SEPARATOR) : ""
@@ -42,6 +43,6 @@ module DeepTest
 
     def runner
       File.expand_path(File.dirname(__FILE__) + "/test/run_test_suite.rb")
-    end    
+    end
   end
 end

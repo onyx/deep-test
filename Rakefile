@@ -1,7 +1,7 @@
 require 'rake'
 require 'rake/testtask'
-require 'rake/rdoctask'
-require 'rake/gempackagetask'
+require 'rdoc/task'
+require 'rubygems/package_task'
 require 'rake/contrib/sshpublisher'
 require 'yaml'
 
@@ -14,8 +14,8 @@ $LOAD_PATH << File.dirname(__FILE__) + "/lib"
 require "deep_test/rake_tasks"
 
 task :default => %w[
-  test 
-  spec 
+  test
+  spec
   deep_test
   deep_spec
   distributed_test
@@ -27,7 +27,7 @@ task :default => %w[
 task :pc => :default
 
 Rake::TestTask.new do |t|
-  t.pattern = "test/**/*_test.rb"
+  t.pattern = "test/**/supervised_test_suite_test.rb"
   t.libs += ['test', 'lib']
 end
 
@@ -38,7 +38,7 @@ end
 DeepTest::TestTask.new(:manual_distributed_test) do |t|
   t.pattern = "test/**/*_test.rb"
   t.distributed_hosts = (ENV['HOSTS'] || '').split(' ')
-  t.sync_options = {:source => File.dirname(__FILE__), 
+  t.sync_options = {:source => File.dirname(__FILE__) + "/../",
                     :username => ENV['USERNAME'],
                     :rsync_options => "--exclude=.svn"}
 end
@@ -46,7 +46,7 @@ end
 DeepTest::TestTask.new(:distributed_test) do |t|
   t.pattern = "test/**/*_test.rb"
   t.distributed_hosts = %w[localhost]
-  t.sync_options = {:source => File.dirname(__FILE__), 
+  t.sync_options = {:source => File.dirname(__FILE__) + "/../",
                     :rsync_options => "--exclude=.svn",
                     :remote_base_dir => "/tmp/deep_test"}
 end
@@ -63,7 +63,7 @@ end
 Spec::Rake::SpecTask.new(:distributed_spec) do |t|
   t.spec_files = FileList['spec/**/*_spec.rb']
   t.deep_test :distributed_hosts => %w[localhost],
-              :sync_options => {:source => File.dirname(__FILE__), 
+              :sync_options => {:source => File.dirname(__FILE__) + "/../",
                                 :rsync_options => "--exclude=.svn"}
 end
 
@@ -81,8 +81,8 @@ Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.title    = "DeepTest"
   rdoc.options << '--line-numbers'
   rdoc.rdoc_files.include(
-    'README.rdoc', 
-    'CHANGELOG', 
+    'README.rdoc',
+    'CHANGELOG',
     'lib/deep_test/null_listener.rb',
     'lib/deep_test/database/*.rb'
   )
@@ -114,7 +114,7 @@ specification = Gem::Specification.new do |s|
   s.files = FileList['{lib,test}/**/*.{rb,rake}', 'README.rdoc', 'CHANGELOG', 'Rakefile'].to_a
 end
 
-Rake::GemPackageTask.new(specification) do |package|
+Gem::PackageTask.new(specification) do |package|
   package.need_zip = true
   package.need_tar = true
 end

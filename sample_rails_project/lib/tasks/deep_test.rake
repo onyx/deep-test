@@ -21,7 +21,7 @@ Rake::Task[:deep_spec].enhance ["db:test:prepare"]
 DeepTest::TestTask.new(:distributed_test => %w[db:test:prepare]) do |t|
   t.number_of_agents = 1
   t.distributed_hosts = %w[localhost]
-  t.requires = File.dirname(__FILE__) + "/../foreign_host_agent_simulation_listener"
+  t.requires = [File.dirname(__FILE__) + "/../foreign_host_agent_simulation_listener"]
   t.listener = "ForeignHostAgentSimulationListener,DeepTest::Database::MysqlSetupListener"
   t.sync_options = {:source => File.expand_path(File.dirname(__FILE__) + "/../.."), 
                     :rsync_options => "--exclude=.svn --copy-dirlinks"}

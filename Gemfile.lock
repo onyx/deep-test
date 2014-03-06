@@ -24,7 +24,7 @@ GEM
       coderay (~> 1.0.5)
       method_source (~> 0.8)
       slop (~> 3.4)
-    rake (0.8.7)
+    rake (10.1.1)
     rspec (1.1.12)
       cucumber (>= 0.1.13)
       hoe (>= 1.8.2)
@@ -39,6 +39,6 @@ DEPENDENCIES
   dust
   mocha (= 0.9.0)
   pry
-  rake (= 0.8.7)
+  rake (= 10.1.1)
   rspec (= 1.1.12)
   test-unit (= 1.2.3)

@@ -7,5 +7,5 @@ group :test do
 end
 
 gem 'rspec', '1.1.12'
-gem 'rake', '0.8.7'
+gem 'rake', '10.1.1'
 gem 'test-unit', '1.2.3'

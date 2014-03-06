@@ -51,9 +51,9 @@ module DeepTest
 
       def spawn_command(options)
         "#{ShellEnvironment.like_login} && " + 
-        "cd #{options.mirror_path} && " + 
+        "cd #{options.mirror_path} && " +
         "OPTIONS=#{options.to_command_line} " + 
-        "ruby lib/deep_test/distributed/establish_beachhead.rb" 
+        "bundle exec ruby lib/deep_test/distributed/establish_beachhead.rb" 
       end
     end
   end

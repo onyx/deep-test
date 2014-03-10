@@ -14,7 +14,7 @@ module DeepTest
         attr_accessor :admin_configuration
       end
       self.admin_configuration = {
-        :adapter  => "mysql",
+        :adapter  => "mysql2",
         :host     => "localhost",
         :username => "root",
         :database => "information_schema"
@@ -25,9 +25,9 @@ module DeepTest
       # on it via ActiveRecord connection based on admin_configuration.
       #
       def create_database
-        admin_connection do |connection|
-          connection.create_database agent_database
-          grant_privileges connection
+        admin_connection do |connection_pool|
+          connection_pool.connection.create_database agent_database
+          grant_privileges connection_pool.connection
         end
       end
 
@@ -53,8 +53,8 @@ module DeepTest
       # Drops database via ActiveRecord connection based on admin_configuration
       #
       def drop_database
-        admin_connection do |connection|
-          connection.drop_database agent_database
+        admin_connection do |connection_pool|
+          connection_pool.connection.drop_database agent_database
         end
       end
 
@@ -101,7 +101,7 @@ module DeepTest
       end
 
       def admin_connection # :nodoc:
-        conn = ActiveRecord::Base.mysql_connection(self.class.admin_configuration)
+        conn = ActiveRecord::Base.establish_connection(self.class.admin_configuration)
         yield conn
       ensure
         conn.disconnect! if conn

@@ -102,7 +102,7 @@ module DeepTest
       # to provide the correct configuration.
       #
       def master_database_config
-        ActiveRecord::Base.configurations[RAILS_ENV].with_indifferent_access
+        ActiveRecord::Base.configurations[Rails.env].with_indifferent_access
       end
 
       #

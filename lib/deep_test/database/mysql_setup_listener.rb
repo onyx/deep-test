@@ -25,9 +25,9 @@ module DeepTest
       # on it via ActiveRecord connection based on admin_configuration.
       #
       def create_database
-        admin_connection do |connection_pool|
-          connection_pool.connection.create_database agent_database
-          grant_privileges connection_pool.connection
+        admin_connection do |connection|
+          connection.create_database agent_database
+          grant_privileges connection
         end
       end
 
@@ -53,8 +53,8 @@ module DeepTest
       # Drops database via ActiveRecord connection based on admin_configuration
       #
       def drop_database
-        admin_connection do |connection_pool|
-          connection_pool.connection.drop_database agent_database
+        admin_connection do |connection|
+          connection.drop_database agent_database
         end
       end
 
@@ -101,7 +101,7 @@ module DeepTest
       end
 
       def admin_connection # :nodoc:
-        conn = ActiveRecord::Base.establish_connection(self.class.admin_configuration)
+        conn = ActiveRecord::Base.mysql2_connection(self.class.admin_configuration)
         yield conn
       ensure
         conn.disconnect! if conn

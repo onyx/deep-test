@@ -5,6 +5,7 @@ module DeepTest
     end
 
     def read(original_work_units_by_id)
+      STDOUT.sync = true
       work_units_by_id = original_work_units_by_id.dup
       errors = 0
 
@@ -19,7 +20,6 @@ module DeepTest
             errors += 1
           else
             if result.respond_to?(:output) && (output = result.output)
-              DeepTest.logger.debug { "PRINTING A DOT!" }
               print(output.empty? ? "." : output)
             end
 

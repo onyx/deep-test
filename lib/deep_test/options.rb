@@ -81,7 +81,7 @@ module DeepTest
 
     def mirror_path
       raise "No source directory specified in sync_options" unless sync_options[:source]
-      relative_mirror_path = @origin_hostname + sync_options[:source].gsub('/','_')
+      relative_mirror_path = @origin_hostname + sync_options[:source].gsub('/','_').gsub(/_$/,'')
       "#{sync_options[:remote_base_dir] || '/tmp'}/#{relative_mirror_path}"
     end
 

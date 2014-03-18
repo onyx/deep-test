@@ -19,6 +19,7 @@ module DeepTest
             errors += 1
           else
             if result.respond_to?(:output) && (output = result.output)
+              DeepTest.logger.debug { "PRINTING A DOT!" }
               print(output.empty? ? "." : output)
             end
 

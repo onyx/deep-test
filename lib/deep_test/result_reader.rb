@@ -19,7 +19,7 @@ module DeepTest
             errors += 1
           else
             if result.respond_to?(:output) && (output = result.output)
-              print output
+              print(output.empty? ? "." : output)
             end
 
             work_unit = work_units_by_id.delete(result.identifier)

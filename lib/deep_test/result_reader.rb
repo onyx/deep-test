@@ -1,10 +1,12 @@
 module DeepTest
   class ResultReader
+    OUTPUTS_PER_LINE = 130
     def initialize(central_command)
       @central_command = central_command
     end
 
     def read(original_work_units_by_id)
+      @output_count = 0
       work_units_by_id = original_work_units_by_id.dup
       errors = 0
 
@@ -16,10 +18,13 @@ module DeepTest
 
           if Agent::Error === result
             puts result
+            @output_count = 0
             errors += 1
           else
             if result.respond_to?(:output) && (output = result.output)
               print(output.empty? ? "." : output)
+              @output_count += 1
+              print("\n") if (@output_count % OUTPUTS_PER_LINE == 0)
             end
 
             work_unit = work_units_by_id.delete(result.identifier)
@@ -28,9 +33,9 @@ module DeepTest
         end
       rescue CentralCommand::NoAgentsRunningError
         FailureMessage.show "DeepTest Agents Are Not Running", <<-end_msg
-          DeepTest's test running agents have not contacted the 
+          DeepTest's test running agents have not contacted the
           server to indicate they are still running.
-          Shutting down the test run on the assumption that they have died. 
+          Shutting down the test run on the assumption that they have died.
         end_msg
       end
 

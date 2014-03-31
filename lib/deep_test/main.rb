@@ -23,7 +23,7 @@ module DeepTest
           DeepTest.logger.debug { "Main: About to process work units (#{$$})" }
           passed = @runner.process_work_units(central_command)
         ensure
-          shutdown
+          graceful_shutdown.join(60)
         end
       ensure
         DeepTest.logger.debug { "Main: Stopping CentralCommand" }
@@ -31,6 +31,15 @@ module DeepTest
       end
 
       Kernel.exit(passed ? 0 : 1) if exit_when_done
+    end
+
+    def graceful_shutdown
+     shutdown
+     Thread.new do
+       loop do
+         Thread.exit if !@central_command.switchboard.any_live_wires?
+       end
+     end
     end
 
     def shutdown

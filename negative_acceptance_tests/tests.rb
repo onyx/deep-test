@@ -4,7 +4,7 @@ require 'dust'
 require 'timeout'
 
 unit_tests do
-  [:test, :spec].each do |framework|
+  [:test].each do |framework|
     test "#{framework}: DeepTest a failing test results in failure" do
       result, output = run_rake framework, :failing
       assert_equal false, result.success?, output

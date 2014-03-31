@@ -10,7 +10,7 @@ module DeepTest
         end
         listener.expects(:master_database_config).returns({})
         listener.expects(:dump_file_name).returns("")
-        $?.expects(:success?).returns(true)
+        listener.expects(:last_process_successful?).returns(true)
         listener.dump_schema
       end
     end

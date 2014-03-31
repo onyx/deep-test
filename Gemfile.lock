@@ -3,11 +3,10 @@ GEM
   specs:
     coderay (1.0.9)
     dust (0.1.6)
-    hoe (3.9.0)
-      rake (>= 0.8, < 11.0)
+    metaclass (0.0.4)
     method_source (0.8.1)
-    mocha (0.9.0)
-      rake
+    mocha (0.13.3)
+      metaclass (~> 0.0.1)
     pry (0.9.12)
       coderay (~> 1.0.5)
       method_source (~> 0.8)
@@ -15,16 +14,15 @@ GEM
     rake (10.1.1)
     rspec (1.1.12)
     slop (3.4.3)
-    test-unit (1.2.3)
-      hoe (>= 1.5.1)
+    test-unit (2.5.5)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   dust
-  mocha (= 0.9.0)
+  mocha (= 0.13.3)
   pry
   rake (= 10.1.1)
   rspec (= 1.1.12)
-  test-unit (= 1.2.3)
+  test-unit (= 2.5.5)

@@ -64,7 +64,11 @@ module DeepTest
       def dump_schema
         config = command_line_config(master_database_config)
         system "mysqldump -R #{config} > #{dump_file_name}"
-        raise "Error Dumping schema" unless $?.success?
+        raise "Error Dumping schema" unless last_process_successful?
+      end
+
+      def last_process_successful?
+        $?.success?
       end
 
       #

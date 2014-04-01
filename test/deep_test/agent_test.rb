@@ -65,6 +65,18 @@ module DeepTest
       agent.execute(StringIO.new, StringIO.new)
     end
 
+    test "notifies listener that it is ending" do
+      options = Options.new({})
+      central_command = TestCentralCommand.start(options)
+      work_unit = ResultWorkUnit.new(:result)
+      central_command.write_work work_unit
+      central_command.done_with_work
+      listener = stub_everything
+      agent = Agent.new(0, options, listener)
+      listener.expects(:ending).with(agent)
+      agent.execute(StringIO.new, StringIO.new)
+    end
+
     test "connect indicates it has connected" do
       options = Options.new({})
       central_command = TestCentralCommand.start(options)

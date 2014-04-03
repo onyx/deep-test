@@ -4,10 +4,7 @@ module DeepTest
       options.connect_to_central_command do |wire|
         ProxyIO.replace_stdout_stderr!(wire) do
           begin
-            catch(:exit_demon) do
-              Signal.trap("TERM") { throw :exit_demon }
-              execute *demon_args
-            end
+            execute *demon_args
           rescue SystemExit => e
             raise
           rescue Exception => e

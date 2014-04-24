@@ -25,16 +25,15 @@ module DeepTest
 
       def starting(agent) # :nodoc:
         @agent = agent
-
-        at_exit do
-          DeepTest.logger.debug { "dropping database #{agent_database}" }
-          drop_database
-        end
-
         drop_database
         create_database
         connect_to_database
         load_schema
+      end
+
+      def ending(agent)
+        @agent = agent
+        drop_database
       end
 
       #

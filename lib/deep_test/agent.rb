@@ -46,6 +46,8 @@ module DeepTest
       end
     rescue CentralCommand::NoWorkUnitsRemainingError
       DeepTest.logger.debug { "Agent #{number}: no more work to do" }
+    ensure
+      @listener.ending(self)
     end
 
     def next_work_unit_message(wire)

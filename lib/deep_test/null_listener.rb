@@ -58,5 +58,11 @@ module DeepTest
     #
     def finished_work(agent, work_unit, result)
     end
+
+    #
+    # A callback method for listener cleanup when an agent is shutting down
+    #
+    def ending(agent)
+    end
   end
 end

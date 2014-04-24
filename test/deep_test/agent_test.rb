@@ -1,6 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + "/../test_helper")
 
 module DeepTest
+
   unit_tests do
     test "puts result on central_command with acknowledgement of work" do
       options = Options.new({})
@@ -61,6 +62,18 @@ module DeepTest
       listener = stub_everything
       agent = Agent.new(0, options, listener)
       listener.expects(:finished_work).with(agent, work_unit, TestResult.new(:result))
+      agent.execute(StringIO.new, StringIO.new)
+    end
+
+    test "notifies listener that it is ending" do
+      options = Options.new({})
+      central_command = TestCentralCommand.start(options)
+      work_unit = ResultWorkUnit.new(:result)
+      central_command.write_work work_unit
+      central_command.done_with_work
+      listener = stub_everything
+      agent = Agent.new(0, options, listener)
+      listener.expects(:ending).with(agent)
       agent.execute(StringIO.new, StringIO.new)
     end
 
@@ -146,7 +159,8 @@ module DeepTest
 
       t = Thread.new { Agent.new(0, options, stub_everything).execute(StringIO.new, StringIO.new) }
       Thread.pass
-      central_command.write_work stub(:run => TestResult.new(:result))
+      work_unit = Test::WorkUnit.new(TestFactory.passing_test)
+      central_command.write_work work_unit
       central_command.done_with_work
       t.join
       assert_equal TestResult.new(:result), central_command.take_result
